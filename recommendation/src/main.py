@@ -1,3 +1,5 @@
+from typing import Any, Dict
+
 import click
 from src.algorithms.random_recommender import RandomRecommender
 from src.utils import download
@@ -30,26 +32,35 @@ def download_command():
     type=int,
     default=5,
 )
+@click.option(
+    "--top_k",
+    "top_k",
+    type=int,
+    default=10,
+)
 @click.pass_context
 def recommend(
     ctx,
     num_users: int,
     num_test_items: int,
+    top_k: int,
 ):
     ctx.obj = dict(
         num_users=num_users,
         num_test_items=num_test_items,
+        top_k=top_k,
     )
 
 
 @click.command()
 @click.pass_obj
-def random_recommend(obj):
+def random_recommend(obj: Dict[str, Any]):
     logger.info("random recommendation")
     random_recommender = RandomRecommender(
-        num_users=obj.get("num_users", 1000), num_test_items=obj.get("num_test_items", 5)
+        num_users=obj.get("num_users", 1000),
+        num_test_items=obj.get("num_test_items", 5),
     )
-    random_recommender.run_sample()
+    random_recommender.run_sample(k=obj.get("top_k", 10))
     logger.info("done random recommendation")
 
 

@@ -25,7 +25,9 @@ class Metrics:
     recall_at_k: RecallAtK
 
     def __repr__(self):
-        return f"rmse={self.rmse:.3f}, Precision@K={self.precision_at_k.precision:.3f}, Recall@K={self.recall_at_k.recall:.3f}"
+        return f"""rmse={self.rmse:.3f}
+Precision@K={self.precision_at_k.precision:.3f}
+Recall@K={self.recall_at_k.recall:.3f}"""
 
 
 class MetricCalculator(object):
@@ -41,7 +43,31 @@ class MetricCalculator(object):
         pred_user2items: Dict[int, List[int]],
         k: int,
     ) -> Metrics:
-        pass
+        rmse = self.calculate_rmse(
+            true_rating=true_rating,
+            pred_rating=pred_rating,
+        )
+        precision_at_k = self.calculate_precision_at_k(
+            true_user2items=true_user2items,
+            pred_user2items=pred_user2items,
+            k=k,
+        )
+        recall_at_k = self.calculate_recall_at_k(
+            true_user2items=true_user2items,
+            pred_user2items=pred_user2items,
+            k=k,
+        )
+        return Metrics(
+            rmse=rmse,
+            precision_at_k=PrecisionAtK(
+                precision=precision_at_k,
+                k=k,
+            ),
+            recall_at_k=RecallAtK(
+                recall=recall_at_k,
+                k=k,
+            ),
+        )
 
     def precision_at_k(
         self,

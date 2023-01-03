@@ -79,7 +79,9 @@ run_download: build_recommendation
 		--platform linux/x86_64 \
 		-v $(RECOMMENDATION_DIR)/data:/opt/data \
 		$(DOCKER_RECOMMENDATION_IMAGE_NAME) \
-		python -m src.main download-command
+		python \
+			-m src.main \
+			download-command
 
 .PHONY: run_random_recommend
 run_random_recommend: build_recommendation
@@ -90,7 +92,13 @@ run_random_recommend: build_recommendation
 		--platform linux/x86_64 \
 		-v $(RECOMMENDATION_DIR)/data:/opt/data \
 		$(DOCKER_RECOMMENDATION_IMAGE_NAME) \
-		python -m src.main recommend --num_users 1000 random-recommend
+		python \
+			-m src.main \
+			recommend \
+			--num_users 1000 \
+			--num_test_items 5 \
+			--top_k 10 \
+			random-recommend
 
 ############ ALL COMMANDS ############
 .PHONY: req_all

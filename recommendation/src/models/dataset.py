@@ -37,6 +37,7 @@ class DataLoader(object):
         self.logger.info(f"start loading data: {self.data_path}")
         ratings, movie_content = self._load()
         movielens_train, movielens_test = self._split_data(ratings)
+
         movielens_test_user2items = (
             movielens_test[movielens_test.rating >= 4].groupby("user_id").agg({"movie_id": list})["movie_id"].to_dict()
         )
@@ -54,12 +55,14 @@ class DataLoader(object):
         self,
         movielens: pd.DataFrame,
     ) -> Tuple[pd.DataFrame, pd.DataFrame]:
+        self.logger.info("split dataset...")
         movielens["rating_order"] = movielens.groupby("user_id")["timestamp"].rank(
             ascending=False,
             method="first",
         )
         movielens_train = movielens[movielens["rating_order"] > self.num_test_items]
         movielens_test = movielens[movielens["rating_order"] <= self.num_test_items]
+
         self.logger.info(
             f"""
 splitted data:
@@ -71,6 +74,7 @@ splitted data:
 
     def _load(self) -> (pd.DataFrame, pd.DataFrame):
         m_cols = ["movie_id", "title", "genre"]
+        self.logger.info("read movies.dat...")
         movies = pd.read_csv(
             os.path.join(self.data_path, "movies.dat"),
             names=m_cols,
@@ -81,6 +85,7 @@ splitted data:
         movies["genre"] = movies.genre.apply(lambda x: x.split("|"))
 
         t_cols = ["user_id", "movie_id", "tag", "timestamp"]
+        self.logger.info("read tags.dat...")
         user_tagged_movies = pd.read_csv(
             os.path.join(self.data_path, "tags.dat"),
             names=t_cols,
@@ -94,6 +99,7 @@ splitted data:
         movies = movies.merge(movie_tags, on="movie_id", how="left")
 
         r_cols = ["user_id", "movie_id", "rating", "timestamp"]
+        self.logger.info("read ratings.dat...")
         ratings = pd.read_csv(
             os.path.join(self.data_path, "ratings.dat"),
             names=r_cols,
@@ -104,9 +110,11 @@ splitted data:
         valid_user_ids = sorted(ratings.user_id.unique())[: self.num_users]
         ratings = ratings[ratings.user_id <= max(valid_user_ids)]
 
+        self.logger.info("merge data...")
         movielens_ratings = ratings.merge(
             movies,
             on="movie_id",
         )
 
+        self.logger.info("done loading data")
         return movielens_ratings, movies

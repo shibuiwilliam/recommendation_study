@@ -37,19 +37,19 @@ class BaseRecommender(ABC):
         k: int = 10,
     ) -> None:
         movielens = self.data_loader.load()
-        recommend_result = self.recommend(movielens)
+        recommend_result = self.recommend(dataset=movielens)
         metrics = self.metric_calculator.calculate(
-            movielens.test.rating.tolist(),
-            recommend_result.rating.tolist(),
-            movielens.test_user2items,
-            recommend_result.user2items,
+            true_rating=movielens.test.rating.tolist(),
+            pred_rating=recommend_result.rating.tolist(),
+            true_user2items=movielens.test_user2items,
+            pred_user2items=recommend_result.user2items,
             k=k,
         )
         self.logger.info(
             f"""
 RESULT:
     RMSE: {metrics.rmse}
-    PRECISION@{k}: {metrics.precision_at_k}
-    RECALL@{k}: {metrics.recall_at_k}
+    PRECISION@{k}: {metrics.precision_at_k.precision}
+    RECALL@{k}: {metrics.recall_at_k.recall}
         """
         )
