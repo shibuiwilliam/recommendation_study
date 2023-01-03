@@ -20,6 +20,13 @@ class RandomRecommender(BaseRecommender):
         np.random.seed(0)
         self.logger.info("initialized random recommender")
 
+    def train(
+        self,
+        dataset: Dataset,
+        **kwargs,
+    ):
+        pass
+
     def recommend(
         self,
         dataset: Dataset,

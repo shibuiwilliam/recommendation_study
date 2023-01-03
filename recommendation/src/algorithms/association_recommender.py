@@ -21,12 +21,11 @@ class AssociationRecommender(BaseRecommender):
         np.random.seed(0)
         self.logger.info("initialized association recommender")
 
-    def recommend(
+    def train(
         self,
         dataset: Dataset,
         **kwargs,
-    ) -> RecommendResult:
-        self.logger.info("start recommendation")
+    ):
         min_support = kwargs.get("min_support", 0.1)
         min_threshold = kwargs.get("min_threshold", 1)
 
@@ -46,10 +45,21 @@ class AssociationRecommender(BaseRecommender):
             use_colnames=True,
         )
 
-        rules = association_rules(
+        self.rules = association_rules(
             freq_movies,
             metric="lift",
             min_threshold=min_threshold,
+        )
+
+    def recommend(
+        self,
+        dataset: Dataset,
+        **kwargs,
+    ) -> RecommendResult:
+        self.logger.info("start recommendation")
+        self.train(
+            dataset=dataset,
+            **kwargs,
         )
 
         pred_user2items = defaultdict(list)
@@ -59,10 +69,10 @@ class AssociationRecommender(BaseRecommender):
 
         for user_id, data in movielens_train_high_rating.groupby("user_id"):
             input_data = data.sort_values("timestamp")["movie_id"].tolist()[-5:]
-            matched_flags = rules.antecedents.apply(lambda x: len(set(input_data) & x)) >= 1
+            matched_flags = self.rules.antecedents.apply(lambda x: len(set(input_data) & x)) >= 1
 
             consequent_movies = []
-            for i, row in rules[matched_flags].sort_values("lift", ascending=False).iterrows():
+            for i, row in self.rules[matched_flags].sort_values("lift", ascending=False).iterrows():
                 consequent_movies.extend(row["consequents"])
             counter = Counter(consequent_movies)
             for movie_id, movie_cnt in counter.most_common():

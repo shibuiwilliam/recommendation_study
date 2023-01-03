@@ -144,7 +144,6 @@ run_association_recommend: build_recommendation
 		--name=popularity_recommend \
 		--platform linux/x86_64 \
 		-v $(RECOMMENDATION_DIR)/data:/opt/data \
-		-e RATING=$(RATING) \
 		$(DOCKER_RECOMMENDATION_IMAGE_NAME) \
 		python \
 			-m src.main \

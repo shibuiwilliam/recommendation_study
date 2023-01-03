@@ -25,6 +25,14 @@ class BaseRecommender(ABC):
         self.logger.info("initialized base recommender")
 
     @abstractmethod
+    def train(
+        self,
+        dataset: Dataset,
+        **kwargs,
+    ):
+        raise NotImplementedError
+
+    @abstractmethod
     def recommend(
         self,
         dataset: Dataset,
@@ -52,8 +60,8 @@ class BaseRecommender(ABC):
         self.logger.info(
             f"""
 RESULT:
-    RMSE: {metrics.rmse}
-    PRECISION@{k}: {metrics.precision_at_k.precision}
-    RECALL@{k}: {metrics.recall_at_k.recall}
+    RMSE: {metrics.rmse:.3f}
+    PRECISION@{k}: {metrics.precision_at_k.precision:.3f}
+    RECALL@{k}: {metrics.recall_at_k.recall:.3f}
         """
         )
