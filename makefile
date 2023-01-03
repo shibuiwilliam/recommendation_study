@@ -69,3 +69,43 @@ push_recommendation:
 .PHONY: pull_recommendation
 pull_recommendation:
 	docker pull $(DOCKER_RECOMMENDATION_IMAGE_NAME)
+
+.PHONY: run_download
+run_download: build_recommendation
+	docker run \
+		-it \
+		--rm \
+		--name=download \
+		--platform linux/x86_64 \
+		-v $(RECOMMENDATION_DIR)/data:/opt/data \
+		$(DOCKER_RECOMMENDATION_IMAGE_NAME) \
+		python -m src.main download-command
+
+.PHONY: run_random_recommend
+run_random_recommend: build_recommendation
+	docker run \
+		-it \
+		--rm \
+		--name=random_recommend \
+		--platform linux/x86_64 \
+		-v $(RECOMMENDATION_DIR)/data:/opt/data \
+		$(DOCKER_RECOMMENDATION_IMAGE_NAME) \
+		python -m src.main recommend --num_users 1000 random-recommend
+
+############ ALL COMMANDS ############
+.PHONY: req_all
+req_all: \
+	req \
+	req_recommendation
+
+.PHONY: build_all
+build_all: \
+	build_recommendation
+
+.PHONY: push_all
+push_all: \
+	push_recommendation
+
+.PHONY: pull_all
+pull_all: \
+	pull_recommendation

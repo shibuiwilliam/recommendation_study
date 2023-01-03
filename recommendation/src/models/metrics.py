@@ -3,6 +3,7 @@ from typing import Dict, List
 
 import numpy as np
 from sklearn.metrics import mean_squared_error
+from src.utils.logger import configure_logger
 
 
 @dataclass(frozen=True)
@@ -29,7 +30,8 @@ class Metrics:
 
 class MetricCalculator(object):
     def __init__(self):
-        pass
+        self.logger = configure_logger(__name__)
+        self.logger.info("initialized metric calculator")
 
     def calculate(
         self,

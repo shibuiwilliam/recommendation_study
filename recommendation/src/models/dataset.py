@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Tuple
 
 import pandas as pd
+from src.utils.logger import configure_logger
 
 
 @dataclass(frozen=True)
@@ -24,24 +25,30 @@ class DataLoader(object):
         self,
         num_users: int = 1000,
         num_test_items: int = 5,
-        data_path: str = "../../data/ml-10M100K/",
+        data_path: str = "data/ml-10M100K/",
     ):
+        self.logger = configure_logger(__name__)
         self.num_users = num_users
         self.num_test_items = num_test_items
         self.data_path = data_path
+        self.logger.info("initialized data loader")
 
     def load(self) -> Dataset:
+        self.logger.info(f"start loading data: {self.data_path}")
         ratings, movie_content = self._load()
         movielens_train, movielens_test = self._split_data(ratings)
         movielens_test_user2items = (
             movielens_test[movielens_test.rating >= 4].groupby("user_id").agg({"movie_id": list})["movie_id"].to_dict()
         )
-        return Dataset(
+
+        dataset = Dataset(
             train=movielens_train,
             test=movielens_test,
             test_user2items=movielens_test_user2items,
             item_content=movie_content,
         )
+        self.logger.info(f"done loading data: {self.data_path}")
+        return dataset
 
     def _split_data(
         self,
@@ -53,6 +60,13 @@ class DataLoader(object):
         )
         movielens_train = movielens[movielens["rating_order"] > self.num_test_items]
         movielens_test = movielens[movielens["rating_order"] <= self.num_test_items]
+        self.logger.info(
+            f"""
+splitted data:
+    train: {movielens_train.shape}
+    test: {movielens_test.shape} 
+        """
+        )
         return movielens_train, movielens_test
 
     def _load(self) -> (pd.DataFrame, pd.DataFrame):
