@@ -127,3 +127,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+*/.idea/*
+
+recommendation/data/*.zip
+recommendation/data/ml-10M100K/*
