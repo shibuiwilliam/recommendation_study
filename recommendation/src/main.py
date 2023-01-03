@@ -1,8 +1,9 @@
 from typing import Any, Dict
 
 import click
+from src.algorithms.popularity_recommender import PopularityRecommender
 from src.algorithms.random_recommender import RandomRecommender
-from src.utils import download
+from src.utils import download, small_ratings
 from src.utils.logger import configure_logger
 
 logger = configure_logger(__name__)
@@ -17,6 +18,18 @@ def cli():
 def download_command():
     logger.info("download")
     download.download()
+
+
+@click.command()
+@click.option(
+    "--rate",
+    "rate",
+    type=float,
+    default=0.1,
+)
+def small_rating_command(rate: float = 0.1):
+    logger.info("select ratings")
+    small_ratings.make_small_ratings(rate=rate)
 
 
 @click.group()
@@ -56,18 +69,42 @@ def recommend(
 @click.pass_obj
 def random_recommend(obj: Dict[str, Any]):
     logger.info("random recommendation")
-    random_recommender = RandomRecommender(
+    recommender = RandomRecommender(
         num_users=obj.get("num_users", 1000),
         num_test_items=obj.get("num_test_items", 5),
     )
-    random_recommender.run_sample(k=obj.get("top_k", 10))
+    recommender.run_sample(k=obj.get("top_k", 10))
     logger.info("done random recommendation")
 
 
+@click.command()
+@click.pass_obj
+@click.option(
+    "--minimum_num_rating",
+    "minimum_num_rating",
+    type=int,
+    default=200,
+)
+def popularity_recommend(
+    obj: Dict[str, Any],
+    minimum_num_rating: int,
+):
+    logger.info("popularity recommendation")
+    recommender = PopularityRecommender(
+        num_users=obj.get("num_users", 1000),
+        num_test_items=obj.get("num_test_items", 5),
+    )
+    recommender.run_sample(
+        k=obj.get("top_k", 10),
+        minimum_num_rating=minimum_num_rating,
+    )
+    logger.info("done popularity recommendation")
+
+
 if __name__ == "__main__":
-    logger.info("#### START ####")
     cli.add_command(download_command)
+    cli.add_command(small_rating_command)
     recommend.add_command(random_recommend)
+    recommend.add_command(popularity_recommend)
     cli.add_command(recommend)
     cli()
-    logger.info("#### COMPLETED ####")

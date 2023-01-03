@@ -35,9 +35,13 @@ class BaseRecommender(ABC):
     def run_sample(
         self,
         k: int = 10,
+        **kwargs,
     ) -> None:
         movielens = self.data_loader.load()
-        recommend_result = self.recommend(dataset=movielens)
+        recommend_result = self.recommend(
+            movielens,
+            **kwargs,
+        )
         metrics = self.metric_calculator.calculate(
             true_rating=movielens.test.rating.tolist(),
             pred_rating=recommend_result.rating.tolist(),

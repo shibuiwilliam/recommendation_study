@@ -1,9 +1,15 @@
 import os
 from dataclasses import dataclass
+from enum import Enum
 from typing import Dict, List, Tuple
 
 import pandas as pd
 from src.utils.logger import configure_logger
+
+
+class Ratings(Enum):
+    Rating = "ratings.dat"
+    SmallRating = "small_rating_0.05.dat"
 
 
 @dataclass(frozen=True)
@@ -101,7 +107,7 @@ splitted data:
         r_cols = ["user_id", "movie_id", "rating", "timestamp"]
         self.logger.info("read ratings.dat...")
         ratings = pd.read_csv(
-            os.path.join(self.data_path, "ratings.dat"),
+            os.path.join(self.data_path, Ratings.SmallRating.value),
             names=r_cols,
             sep="::",
             engine="python",

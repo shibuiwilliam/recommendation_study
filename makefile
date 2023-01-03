@@ -83,6 +83,20 @@ run_download: build_recommendation
 			-m src.main \
 			download-command
 
+.PHONY: run_small_rating
+run_small_rating: build_recommendation
+	docker run \
+		-it \
+		--rm \
+		--name=small_rating \
+		--platform linux/x86_64 \
+		-v $(RECOMMENDATION_DIR)/data:/opt/data \
+		$(DOCKER_RECOMMENDATION_IMAGE_NAME) \
+		python \
+			-m src.main \
+			small-rating-command \
+			--rate 0.1
+
 .PHONY: run_random_recommend
 run_random_recommend: build_recommendation
 	docker run \
@@ -99,6 +113,25 @@ run_random_recommend: build_recommendation
 			--num_test_items 5 \
 			--top_k 10 \
 			random-recommend
+
+.PHONY: run_popularity_recommend
+run_popularity_recommend: build_recommendation
+	docker run \
+		-it \
+		--rm \
+		--name=popularity_recommend \
+		--platform linux/x86_64 \
+		-v $(RECOMMENDATION_DIR)/data:/opt/data \
+		$(DOCKER_RECOMMENDATION_IMAGE_NAME) \
+		python \
+			-m src.main \
+			recommend \
+			--num_users 1000 \
+			--num_test_items 5 \
+			--top_k 10 \
+			popularity-recommend \
+			--minimum_num_rating 200
+
 
 ############ ALL COMMANDS ############
 .PHONY: req_all
