@@ -46,6 +46,8 @@ RECOMMENDATION_VERSION := 0.0.0
 DOCKERFILE_RECOMMENDATION = $(RECOMMENDATION_DIR)/$(DOCKERFILE)
 DOCKER_RECOMMENDATION_IMAGE_NAME = $(DOCKER_REPOSITORY):$(RECOMMENDATION_VERSION)
 
+RATING := SmallRating
+
 .PHONY: req_recommendation
 req_recommendation:
 	cd $(RECOMMENDATION_DIR) && \
@@ -105,6 +107,7 @@ run_random_recommend: build_recommendation
 		--name=random_recommend \
 		--platform linux/x86_64 \
 		-v $(RECOMMENDATION_DIR)/data:/opt/data \
+		-e RATING=$(RATING) \
 		$(DOCKER_RECOMMENDATION_IMAGE_NAME) \
 		python \
 			-m src.main \
@@ -122,6 +125,7 @@ run_popularity_recommend: build_recommendation
 		--name=popularity_recommend \
 		--platform linux/x86_64 \
 		-v $(RECOMMENDATION_DIR)/data:/opt/data \
+		-e RATING=$(RATING) \
 		$(DOCKER_RECOMMENDATION_IMAGE_NAME) \
 		python \
 			-m src.main \
@@ -131,6 +135,26 @@ run_popularity_recommend: build_recommendation
 			--top_k 10 \
 			popularity-recommend \
 			--minimum_num_rating 200
+
+.PHONY: run_association_recommend
+run_association_recommend: build_recommendation
+	docker run \
+		-it \
+		--rm \
+		--name=popularity_recommend \
+		--platform linux/x86_64 \
+		-v $(RECOMMENDATION_DIR)/data:/opt/data \
+		-e RATING=$(RATING) \
+		$(DOCKER_RECOMMENDATION_IMAGE_NAME) \
+		python \
+			-m src.main \
+			recommend \
+			--num_users 1000 \
+			--num_test_items 5 \
+			--top_k 10 \
+			association-recommend \
+			--min_support 0.1 \
+			--min_threshold 1.0
 
 
 ############ ALL COMMANDS ############

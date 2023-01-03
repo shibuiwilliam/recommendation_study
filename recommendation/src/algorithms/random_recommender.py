@@ -40,6 +40,9 @@ class RandomRecommender(BaseRecommender):
         for i, row in dataset.test.iterrows():
             if i % 1000 == 0:
                 self.logger.info(f"at {i} row")
+            if row["user_id"] not in user_id2index:
+                pred_results.append(np.random.uniform(0.5, 5.0))
+                continue
             if row["movie_id"] not in movie_id2index:
                 pred_results.append(np.random.uniform(0.5, 5.0))
                 continue

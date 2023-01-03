@@ -9,7 +9,7 @@ from src.utils.logger import configure_logger
 
 class Ratings(Enum):
     Rating = "ratings.dat"
-    SmallRating = "small_rating_0.05.dat"
+    SmallRating = "small_rating_0.1.dat"
 
 
 @dataclass(frozen=True)
@@ -105,9 +105,13 @@ splitted data:
         movies = movies.merge(movie_tags, on="movie_id", how="left")
 
         r_cols = ["user_id", "movie_id", "rating", "timestamp"]
-        self.logger.info("read ratings.dat...")
+
+        rating_file = Ratings.Rating.value
+        if os.getenv("RATING") == Ratings.SmallRating.name:
+            rating_file = Ratings.SmallRating.value
+        self.logger.info(f"read {rating_file}...")
         ratings = pd.read_csv(
-            os.path.join(self.data_path, Ratings.SmallRating.value),
+            os.path.join(self.data_path, rating_file),
             names=r_cols,
             sep="::",
             engine="python",

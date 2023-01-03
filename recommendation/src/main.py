@@ -1,6 +1,7 @@
 from typing import Any, Dict
 
 import click
+from src.algorithms.association_recommender import AssociationRecommender
 from src.algorithms.popularity_recommender import PopularityRecommender
 from src.algorithms.random_recommender import RandomRecommender
 from src.utils import download, small_ratings
@@ -101,10 +102,43 @@ def popularity_recommend(
     logger.info("done popularity recommendation")
 
 
+@click.command()
+@click.pass_obj
+@click.option(
+    "--min_support",
+    "min_support",
+    type=float,
+    default=0.1,
+)
+@click.option(
+    "--min_threshold",
+    "min_threshold",
+    type=float,
+    default=1.0,
+)
+def association_recommend(
+    obj: Dict[str, Any],
+    min_support: float,
+    min_threshold: float,
+):
+    logger.info("association recommendation")
+    recommender = AssociationRecommender(
+        num_users=obj.get("num_users", 1000),
+        num_test_items=obj.get("num_test_items", 5),
+    )
+    recommender.run_sample(
+        k=obj.get("top_k", 10),
+        min_support=min_support,
+        min_threshold=min_threshold,
+    )
+    logger.info("done association recommendation")
+
+
 if __name__ == "__main__":
     cli.add_command(download_command)
     cli.add_command(small_rating_command)
     recommend.add_command(random_recommend)
     recommend.add_command(popularity_recommend)
+    recommend.add_command(association_recommend)
     cli.add_command(recommend)
     cli()
