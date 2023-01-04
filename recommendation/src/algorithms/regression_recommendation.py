@@ -19,6 +19,7 @@ class RegressionRecommendation(BaseRecommender):
             num_test_items=num_test_items,
             data_path=data_path,
         )
+        self.reg: RandomForestRegressor = None
         np.random.seed(0)
         self.logger.info("initialized regression recommender")
 
