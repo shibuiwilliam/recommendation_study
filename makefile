@@ -73,7 +73,7 @@ pull_recommendation:
 	docker pull $(DOCKER_RECOMMENDATION_IMAGE_NAME)
 
 .PHONY: run_download
-run_download: build_recommendation
+run_download:
 	docker run \
 		-it \
 		--rm \
@@ -86,7 +86,7 @@ run_download: build_recommendation
 			download-command
 
 .PHONY: run_small_rating
-run_small_rating: build_recommendation
+run_small_rating:
 	docker run \
 		-it \
 		--rm \
@@ -100,7 +100,7 @@ run_small_rating: build_recommendation
 			--rate 0.1
 
 .PHONY: run_random_recommend
-run_random_recommend: build_recommendation
+run_random_recommend:
 	docker run \
 		-it \
 		--rm \
@@ -118,7 +118,7 @@ run_random_recommend: build_recommendation
 			random-recommend
 
 .PHONY: run_popularity_recommend
-run_popularity_recommend: build_recommendation
+run_popularity_recommend:
 	docker run \
 		-it \
 		--rm \
@@ -137,7 +137,7 @@ run_popularity_recommend: build_recommendation
 			--minimum_num_rating 200
 
 .PHONY: run_association_recommend
-run_association_recommend: build_recommendation
+run_association_recommend:
 	docker run \
 		-it \
 		--rm \
@@ -154,6 +154,41 @@ run_association_recommend: build_recommendation
 			association-recommend \
 			--min_support 0.1 \
 			--min_threshold 1.0
+
+.PHONY: run_umcf_recommend
+run_umcf_recommend:
+	docker run \
+		-it \
+		--rm \
+		--name=umcf_recommend \
+		--platform linux/x86_64 \
+		-v $(RECOMMENDATION_DIR)/data:/opt/data \
+		-e RATING=$(RATING) \
+		$(DOCKER_RECOMMENDATION_IMAGE_NAME) \
+		python \
+			-m src.main \
+			recommend \
+			--num_users 1000 \
+			--num_test_items 5 \
+			--top_k 10 \
+			umcf-recommend
+
+.PHONY: run_regression_recommend
+run_regression_recommend:
+	docker run \
+		-it \
+		--rm \
+		--name=regression_recommend \
+		--platform linux/x86_64 \
+		-v $(RECOMMENDATION_DIR)/data:/opt/data \
+		$(DOCKER_RECOMMENDATION_IMAGE_NAME) \
+		python \
+			-m src.main \
+			recommend \
+			--num_users 1000 \
+			--num_test_items 5 \
+			--top_k 10 \
+			regression-recommend
 
 
 ############ ALL COMMANDS ############
@@ -173,3 +208,10 @@ push_all: \
 .PHONY: pull_all
 pull_all: \
 	pull_recommendation
+
+.PHONY: run_small
+run_small: run_random_recommend \
+	run_popularity_recommend \
+	run_association_recommend \
+	run_umcf_recommend \
+	run_regression_recommend

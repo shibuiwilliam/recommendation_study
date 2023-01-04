@@ -4,6 +4,8 @@ import click
 from src.algorithms.association_recommender import AssociationRecommender
 from src.algorithms.popularity_recommender import PopularityRecommender
 from src.algorithms.random_recommender import RandomRecommender
+from src.algorithms.regression_recommendation import RegressionRecommendation
+from src.algorithms.umcf_recommender import UMCFRecommender
 from src.utils import download, small_ratings
 from src.utils.logger import configure_logger
 
@@ -134,11 +136,58 @@ def association_recommend(
     logger.info("done association recommendation")
 
 
+@click.command()
+@click.pass_obj
+def umcf_recommend(obj: Dict[str, Any]):
+    logger.info("umcf recommendation")
+    recommender = UMCFRecommender(
+        num_users=obj.get("num_users", 1000),
+        num_test_items=obj.get("num_test_items", 5),
+    )
+    recommender.run_sample(
+        k=obj.get("top_k", 10),
+        top_k=obj.get("top_k", 10),
+    )
+    logger.info("done umcf recommendation")
+
+
+@click.command()
+@click.pass_obj
+def umcf_recommend(obj: Dict[str, Any]):
+    logger.info("umcf recommendation")
+    recommender = UMCFRecommender(
+        num_users=obj.get("num_users", 1000),
+        num_test_items=obj.get("num_test_items", 5),
+    )
+    recommender.run_sample(
+        k=obj.get("top_k", 10),
+        top_k=obj.get("top_k", 10),
+    )
+    logger.info("done umcf recommendation")
+
+
+@click.command()
+@click.pass_obj
+def regression_recommend(obj: Dict[str, Any]):
+    logger.info("regression recommendation")
+    recommender = RegressionRecommendation(
+        num_users=obj.get("num_users", 1000),
+        num_test_items=obj.get("num_test_items", 5),
+    )
+    recommender.run_sample(
+        k=obj.get("top_k", 10),
+        top_k=obj.get("top_k", 10),
+    )
+    logger.info("done regression recommendation")
+
+
 if __name__ == "__main__":
     cli.add_command(download_command)
     cli.add_command(small_rating_command)
     recommend.add_command(random_recommend)
     recommend.add_command(popularity_recommend)
     recommend.add_command(association_recommend)
+    recommend.add_command(umcf_recommend)
+    recommend.add_command(regression_recommend)
     cli.add_command(recommend)
     cli()

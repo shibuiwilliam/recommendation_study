@@ -47,7 +47,7 @@ class BaseRecommender(ABC):
     ) -> None:
         movielens = self.data_loader.load()
         recommend_result = self.recommend(
-            movielens,
+            dataset=movielens,
             **kwargs,
         )
         metrics = self.metric_calculator.calculate(

@@ -27,7 +27,6 @@ class PopularityRecommender(BaseRecommender):
     ):
         minimum_num_rating = kwargs.get("minimum_num_rating", 200)
 
-        self.user_watched_movies = dataset.train.groupby("user_id").agg({"movie_id": list})["movie_id"].to_dict()
         movie_stats = dataset.train.groupby("movie_id").agg({"rating": [np.size, np.mean]})
         atleast_flg = movie_stats["rating"]["size"] >= minimum_num_rating
         self.movies_sorted_by_rating = (
@@ -50,10 +49,12 @@ class PopularityRecommender(BaseRecommender):
             **kwargs,
         )
 
+        user_watched_movies = dataset.train.groupby("user_id").agg({"movie_id": list})["movie_id"].to_dict()
+
         pred_user2items = defaultdict(list)
         for user_id in dataset.train.user_id.unique():
             for movie_id in self.movies_sorted_by_rating:
-                if movie_id not in self.user_watched_movies[user_id]:
+                if movie_id not in user_watched_movies[user_id]:
                     pred_user2items[user_id].append(movie_id)
                 if len(pred_user2items[user_id]) == 10:
                     break
