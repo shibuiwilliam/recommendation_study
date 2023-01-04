@@ -153,21 +153,6 @@ def umcf_recommend(obj: Dict[str, Any]):
 
 @click.command()
 @click.pass_obj
-def umcf_recommend(obj: Dict[str, Any]):
-    logger.info("umcf recommendation")
-    recommender = UMCFRecommender(
-        num_users=obj.get("num_users", 1000),
-        num_test_items=obj.get("num_test_items", 5),
-    )
-    recommender.run_sample(
-        k=obj.get("top_k", 10),
-        top_k=obj.get("top_k", 10),
-    )
-    logger.info("done umcf recommendation")
-
-
-@click.command()
-@click.pass_obj
 def regression_recommend(obj: Dict[str, Any]):
     logger.info("regression recommendation")
     recommender = RegressionRecommendation(

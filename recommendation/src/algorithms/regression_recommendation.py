@@ -41,6 +41,8 @@ class RegressionRecommendation(BaseRecommender):
         dataset: Dataset,
         **kwargs,
     ) -> RecommendResult:
+        self.logger.info("start recommendation")
+
         self.user_movie_matrix = dataset.train.pivot(
             index="user_id",
             columns="movie_id",
@@ -118,4 +120,6 @@ class RegressionRecommendation(BaseRecommender):
             rating=self.test_keys.rating_pred,
             user2items=pred_user2items,
         )
+
+        self.logger.info("done recommendation")
         return recommendation
