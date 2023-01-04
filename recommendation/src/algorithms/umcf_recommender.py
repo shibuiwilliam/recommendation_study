@@ -94,7 +94,7 @@ class UMCFRecommender(BaseRecommender):
 
             for uid, user_ratings in top_n.items():
                 user_ratings.sort(
-                    key=lambda x: x[1],
+                    key=lambda x: x[1],  # type: ignore
                     reverse=True,
                 )
                 top_n[uid] = [d[0] for d in user_ratings[:n]]

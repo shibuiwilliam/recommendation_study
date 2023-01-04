@@ -12,8 +12,14 @@ def download():
     target_file = os.path.join(target_directory, "ml-10m.zip")
 
     if not os.path.exists(target_file):
-        with open(target_file, "wb") as download_file:
-            with httpx.stream("GET", URL) as response:
+        with open(
+            file=target_file,
+            mode="wb",
+        ) as download_file:
+            with httpx.stream(
+                method="GET",
+                url=URL,
+            ) as response:
                 total = int(response.headers["Content-Length"])
                 with tqdm(
                     total=total,
@@ -27,4 +33,7 @@ def download():
                         progress.update(response.num_bytes_downloaded - downloaded_bytes)
                         downloaded_bytes = response.num_bytes_downloaded
 
-    shutil.unpack_archive(target_file, target_directory)
+    shutil.unpack_archive(
+        filename=target_file,
+        extract_dir=target_directory,
+    )

@@ -1,4 +1,5 @@
 from collections import defaultdict
+from typing import List
 
 import numpy as np
 from src.algorithms.base_recommender import BaseRecommender
@@ -43,7 +44,7 @@ class RandomRecommender(BaseRecommender):
             5.0,
             (len(unique_user_ids), len(unique_movie_ids)),
         )
-        pred_results = []
+        pred_results: List[float] = []
         for i, row in dataset.test.iterrows():
             if i % 1000 == 0:
                 self.logger.info(f"at {i} row")
@@ -55,7 +56,7 @@ class RandomRecommender(BaseRecommender):
                 continue
             user_index = user_id2index[row["user_id"]]
             movie_index = movie_id2index[row["movie_id"]]
-            pred_score = pred_matrix[user_index, movie_index]
+            pred_score: float = float(pred_matrix[user_index, movie_index])
             pred_results.append(pred_score)
         dataset.test["rating_pred"] = pred_results
 

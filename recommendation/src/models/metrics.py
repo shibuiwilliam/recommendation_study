@@ -98,7 +98,7 @@ class MetricCalculator(object):
         true_rating: List[float],
         pred_rating: List[float],
     ) -> float:
-        return np.sqrt(mean_squared_error(true_rating, pred_rating))
+        return float(np.sqrt(mean_squared_error(true_rating, pred_rating)))
 
     def calculate_recall_at_k(
         self,
@@ -116,7 +116,7 @@ class MetricCalculator(object):
                 k=k,
             )
             scores.append(r_at_k)
-        return np.mean(scores)
+        return float(np.mean(scores))
 
     def calculate_precision_at_k(
         self,
@@ -134,4 +134,4 @@ class MetricCalculator(object):
                 k=k,
             )
             scores.append(p_at_k)
-        return np.mean(scores)
+        return float(np.mean(scores))
