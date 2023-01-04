@@ -94,7 +94,7 @@ class RegressionRecommendation(BaseRecommender):
 
         test_pred = self.reg.predict(self.test_x.values)
 
-        self.test_keys["rating_pred"] = test_pred
+        self.test_x["rating_pred"] = test_pred
 
         train_all_pred = self.reg.predict(self.train_all_x.values)
 
@@ -117,7 +117,7 @@ class RegressionRecommendation(BaseRecommender):
                     break
 
         recommendation = RecommendResult(
-            rating=self.test_keys.rating_pred,
+            rating=self.test_x.rating_pred,
             user2items=pred_user2items,
         )
 

@@ -4,21 +4,23 @@ DOCKERFILE := Dockerfile
 DOCKER_REPOSITORY := shibui/recommendation_study
 
 ############ COMMON COMMANDS ############
+SRC := $(DIR)/recommendation/src/
+
 .PHONY: lint
 lint:
-	black --check --diff --line-length 120 .
+	black --check --diff --line-length 120 $(SRC)
 
 .PHONY: sort
 sort:
-	isort .
+	isort $(SRC)
 
 .PHONY: fmt
 fmt: sort
-	black --line-length 120 .
+	black --line-length 120 $(SRC)
 
 .PHONY: vet
 vet:
-	mypy .
+	mypy $(SRC)
 
 .PHONY: install_prettier
 install_prettier:

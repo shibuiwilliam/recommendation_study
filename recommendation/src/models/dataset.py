@@ -78,7 +78,7 @@ splitted data:
         )
         return movielens_train, movielens_test
 
-    def _load(self) -> (pd.DataFrame, pd.DataFrame):
+    def _load(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
         m_cols = ["movie_id", "title", "genre"]
         self.logger.info("read movies.dat...")
         movies = pd.read_csv(
